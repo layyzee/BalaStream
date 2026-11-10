@@ -1,9 +1,8 @@
-# 🔬 Forensic Reverse-Engineering Report: Stremio Desktop 5
-> **Target Application:** `/Applications/Stremio.app`  
-> **Vendor:** Smart Code OOD (`com.westbridge.stremio5-mac`)  
-> **Version:** `5.1.30` (Apple Silicon ARM64 Mach-O)  
+# 🔬 BalaStream: Forensic Architecture & Clean-Room Media Engine Report
+> **Investigation Target:** Stremio Desktop 5 (`/Applications/Stremio.app`, Smart Code OOD)  
+> **Reconstructed Production System:** BalaStream (`https://balastream.onrender.com`)  
 > **Investigation Date:** November 10, 2026  
-> **Lead Reverse Engineer:** Balaji Palani & Antigravity  
+> **Lead Architect:** Balaji Palani & Antigravity  
 
 ---
 

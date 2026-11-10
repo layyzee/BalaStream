@@ -33,10 +33,10 @@ export default function ArchitectureModal({ isOpen, onClose }) {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-white tracking-tight">
-                  Stremio Desktop 5 — Forensic Architecture
+                  BalaStream — Forensic Media Architecture
                 </h3>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
-                  ARM64 Reverse-Engineered
+                  ARM64 Clean-Room Study
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-mono">
@@ -61,14 +61,14 @@ export default function ArchitectureModal({ isOpen, onClose }) {
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono uppercase tracking-wider text-purple-400 font-bold flex items-center gap-1.5">
                 <Zap className="w-4 h-4 text-purple-400" />
-                The Triple-Tier Advantage (Why Stremio Crushes Electron)
+                The Triple-Tier Advantage (Why Rust/Wry Crushes Electron)
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">
                 85 MB vs 800 MB RAM
               </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed font-light">
-              Unlike Slack, Discord, or Spotify which bundle a multi-gigabyte Chromium browser per window, Stremio 5 is architected as a **native Rust binary** (`wry` + `tao`) that hosts macOS **`WKWebView`** (Apple WebKit) while offloading high-bitrate video decoding directly to **`libmpv.2.dylib`** with Apple **VideoToolbox** hardware acceleration.
+              Unlike Slack, Discord, or Spotify which bundle a multi-gigabyte Chromium browser per window, high-performance engines like BalaStream employ a **native Rust binary** (`wry` + `tao`) that hosts macOS **`WKWebView`** (Apple WebKit) while offloading high-bitrate video decoding directly to **`libmpv.2.dylib`** with Apple **VideoToolbox** hardware acceleration.
             </p>
           </div>
 

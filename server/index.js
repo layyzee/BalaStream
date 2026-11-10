@@ -178,8 +178,8 @@ let installedAddons = [
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'Stremio Studio Web Player & Forensic Workbench',
-    version: '5.1.30-reconstructed',
+    service: 'BalaStream Media Engine & Forensic Workbench',
+    version: '1.0.0-reconstructed',
     nativeShell: 'Rust / Wry 0.51.2 / WebKit',
     videoEngine: 'libmpv C ABI + Apple VideoToolbox',
     port: PORT,
@@ -353,5 +353,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🎬 Stremio Studio Server running on http://localhost:${PORT}`);
+  console.log(`🎬 BalaStream Server running on http://localhost:${PORT}`);
 });

@@ -211,10 +211,10 @@ export default function AddonManagerModal({
               <div className="p-4 rounded-2xl bg-purple-950/20 border border-purple-500/30 text-purple-200 space-y-2">
                 <h4 className="font-bold text-sm text-purple-300 flex items-center gap-1.5">
                   <Code className="w-4 h-4" />
-                  <span>How Stremio Addon Protocol v3 Works</span>
+                  <span>How Addon Protocol v3 Works</span>
                 </h4>
                 <p className="text-xs leading-relaxed text-purple-200/90 font-light">
-                  Unlike Kodi or Plex which execute arbitrary Python/C plugins locally on the user's computer, Stremio addons are **decentralized HTTP microservices**. The client only queries standard JSON endpoints, making it impossible for addons to compromise device security.
+                  Unlike Kodi or Plex which execute arbitrary Python/C plugins locally on the user's computer, Addon Protocol v3 microservices are **decentralized HTTP endpoints**. The client only queries standard JSON endpoints, making it impossible for addons to compromise device security.
                 </p>
               </div>
 

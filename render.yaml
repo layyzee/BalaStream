@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: stremiostudio
+    name: balastream
     runtime: node
     plan: free
     region: oregon

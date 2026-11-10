@@ -195,7 +195,7 @@ export default function App() {
       <footer className="px-6 py-4 border-t border-white/[0.06] bg-[#07080d] text-[11px] font-mono text-slate-400 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Stremio Studio Engine: Rust Wry 0.51.2 • libmpv.2 C ABI • Apple VideoToolbox</span>
+          <span>BalaStream Engine: Rust Wry 0.51.2 • libmpv.2 C ABI • Apple VideoToolbox</span>
         </div>
         <div className="flex items-center gap-3">
           <span>Curated by <strong className="text-white">Balaji Palani</strong> (Senior Scrum Master / SAFe® 6 SSM)</span>

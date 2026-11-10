@@ -34,14 +34,14 @@ export default function Navbar({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-base tracking-tight text-white font-sans">
-                Stremio<span className="text-purple-400">Studio</span>
+                Bala<span className="text-purple-400">Stream</span>
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
-                v5.1.30 Web
+                Media Engine
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-mono">
-              Native Rust & Wry WebKit Forensic Workbench
+              High-Performance Rust / Wry & libmpv Architecture
             </p>
           </div>
         </div>
