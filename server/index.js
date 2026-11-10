@@ -446,7 +446,22 @@ app.post('/api/addons', async (req, res) => {
   }
 
   try {
-    const response = await fetch(manifestUrl);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 7000);
+
+    const response = await fetch(manifestUrl, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'BalaStream/1.0 (Apple Silicon; Stremio 5.1.30)',
+        'Accept': 'application/json'
+      }
+    });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      throw new Error(`Addon server responded with HTTP ${response.status}`);
+    }
+
     const manifest = await response.json();
 
     const newAddon = {
@@ -455,12 +470,19 @@ app.post('/api/addons', async (req, res) => {
       version: manifest.version || '1.0.0',
       description: manifest.description || 'Community Addon Protocol v3 integration.',
       manifestUrl,
-      icon: '🧩',
+      icon: manifest.icon || '🧩',
       official: false,
       resources: manifest.resources || ['stream', 'catalog']
     };
 
-    installedAddons.push(newAddon);
+    // Prevent duplicate installs
+    const existingIndex = installedAddons.findIndex(a => a.id === newAddon.id || a.manifestUrl === manifestUrl);
+    if (existingIndex >= 0) {
+      installedAddons[existingIndex] = newAddon;
+    } else {
+      installedAddons.push(newAddon);
+    }
+
     res.status(201).json(newAddon);
   } catch (err) {
     res.status(400).json({ error: `Failed to fetch addon manifest: ${err.message}` });

@@ -1,6 +1,6 @@
 # 🔬 BalaStream: Forensic Architecture & Clean-Room Media Engine Report
 > **Investigation Target:** Stremio Desktop 5 (`/Applications/Stremio.app`, Smart Code OOD)  
-> **Reconstructed Production System:** BalaStream (`https://balastream.onrender.com`)  
+> **Reconstructed Production System:** BalaStream (Local-First Engineering Architecture & Reverse-Engineering Benchmark)  
 > **Investigation Date:** November 10, 2026  
 > **Lead Architect:** Balaji Palani & Antigravity  
 

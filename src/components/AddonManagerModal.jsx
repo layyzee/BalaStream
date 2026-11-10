@@ -18,32 +18,103 @@ import confetti from 'canvas-confetti';
 
 const POPULAR_HTTP_ADDONS = [
   {
-    id: 'com.stremio.HdHub',
-    name: 'HDHub Streams',
-    version: '1.0.7',
-    description: 'Direct multi-quality HTTP & HLS video streams (4K / 1080p / 720p) for movies and series.',
-    manifestUrl: 'https://hdhub.thevolecitor.qzz.io/eyJ0b3Jib3giOiJ1bnNldCIsInF1YWxpdGllcyI6IjIxNjBwLDEwODBwLDcyMHAiLCJzb3J0IjoiZGVzYyJ9/manifest.json',
-    icon: '⚡',
-    badge: 'Popular HTTP Streamer'
-  },
-  {
     id: 'uk.pengu.play',
-    name: 'PenguPlay (Direct HTTP)',
+    name: 'PenguPlay',
     version: '2.1.0',
-    description: 'Direct streaming addon for Movies, TV, and Anime. Requires personal token configured at pengu.uk.',
+    description: 'Direct HTTP streaming for Movies, TV Shows, Anime, and Live TV. Free account creates a high-speed personal mirror link.',
     manifestUrl: 'https://pengu.uk/manifest.json',
     setupUrl: 'https://pengu.uk',
     icon: '⭐',
-    badge: 'Requires User Token'
+    badge: 'Free • Movies / TV / Anime / Live TV',
+    cost: 'free'
+  },
+  {
+    id: 'com.stremio.HdHub',
+    name: 'HDHub',
+    version: '1.0.7',
+    description: 'Direct multi-quality HTTP & HLS video streams (4K / 1080p / 720p) for movies and series with instant playback.',
+    manifestUrl: 'https://hdhub.thevolecitor.qzz.io/eyJ0b3Jib3giOiJ1bnNldCIsInF1YWxpdGllcyI6IjIxNjBwLDEwODBwLDcyMHAiLCJzb3J0IjoiZGVzYyJ9/manifest.json',
+    setupUrl: 'https://hdhub.thevolecitor.qzz.io',
+    icon: '⚡',
+    badge: '1-Click Install • Fast Movies & Shows',
+    cost: 'free'
+  },
+  {
+    id: 'site.plavio.hd',
+    name: 'HD Plavio',
+    version: '1.0.4',
+    description: 'Community HTTP scraper delivering direct links for Movies, TV Shows, and Live TV channels.',
+    manifestUrl: 'https://hd.plavio.site/manifest.json',
+    setupUrl: 'https://hd.plavio.site',
+    icon: '📺',
+    badge: 'Free • Movies / TV / Live TV',
+    cost: 'free'
+  },
+  {
+    id: 'org.dpdns.cncverse',
+    name: 'CNCVerse Bridge',
+    version: '1.2.0',
+    description: 'Plugin-based addon bridging CloudStream multi-source scrapers to Stremio. Supports Anime, Live TV, and Drama.',
+    manifestUrl: 'https://cncverse.dpdns.org/manifest.json',
+    setupUrl: 'https://cncverse.dpdns.org',
+    icon: '🌉',
+    badge: 'Free • Plugin Based Addon',
+    cost: 'free'
+  },
+  {
+    id: 'com.elfhosted.1111477',
+    name: '1111477',
+    version: '1.0.1',
+    description: 'ElfHosted community HTTP stream provider scraping direct video hosting servers for Movies and TV Shows.',
+    manifestUrl: 'https://1111477.elfhosted.com/manifest.json',
+    setupUrl: 'https://1111477.elfhosted.com',
+    icon: '🚀',
+    badge: 'Free • Movies / TV Shows',
+    cost: 'free'
+  },
+  {
+    id: 'club.babybeamup.webstreamrmbg',
+    name: 'WebStreamrMBG',
+    version: '1.3.2',
+    description: 'Community-hosted fork of WebStreamr extracting high-speed direct HTTP streams for Movies and TV Shows.',
+    manifestUrl: 'https://webstreamr.mbg.baby-beamup.club/manifest.json',
+    setupUrl: 'https://webstreamr.mbg.baby-beamup.club',
+    icon: '🌐',
+    badge: 'Free • Movies / TV Shows',
+    cost: 'free'
+  },
+  {
+    id: 'app.flixnest.streams',
+    name: 'FlixNest',
+    version: '2.0.0',
+    description: 'All-in-one entertainment suite for Movies, TV Shows, Anime, and Live TV. ⚠️ Note: Requires a registered account or subscription.',
+    manifestUrl: 'https://flixnest.app/manifest.json',
+    setupUrl: 'https://flixnest.app',
+    icon: '💵',
+    badge: '⚠️ Costs Money • Account Required',
+    cost: 'paid'
+  },
+  {
+    id: 'info.sooti.addon',
+    name: 'Sooti',
+    version: '2.4.1',
+    description: 'High-speed cached search companion. ⚠️ Note: Requires a paid Debrid API token (Real-Debrid, TorBox, etc.) for instant playback.',
+    manifestUrl: 'https://sooti.info/manifest.json',
+    setupUrl: 'https://sooti.info',
+    icon: '⚡⚡',
+    badge: '⚠️ Costs Money • Requires Debrid Key',
+    cost: 'paid'
   },
   {
     id: 'org.stremio.publicdomain',
     name: 'Public Domain Movies & Demos',
     version: '1.2.0',
-    description: 'Verified public domain films and 4K 60fps Blender Institute media.',
+    description: 'Verified 100% open-access films and 4K 60fps Blender Institute media with zero external dependencies.',
     manifestUrl: 'https://v3-public.strem.io/manifest.json',
+    setupUrl: 'https://stremio.com',
     icon: '🏛️',
-    badge: '100% Free & Open'
+    badge: '100% Free & Open-Access',
+    cost: 'free'
   }
 ];
 
@@ -297,26 +368,42 @@ export default function AddonManagerModal({
                       <div className="flex items-start gap-3">
                         <span className="text-2xl">{preset.icon}</span>
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <h4 className="text-sm font-bold text-white">{preset.name}</h4>
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold ${
+                              preset.cost === 'paid'
+                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                            }`}>
                               {preset.badge}
                             </span>
                           </div>
                           <p className="text-xs text-slate-400 leading-relaxed">
                             {preset.description}
                           </p>
-                          {preset.setupUrl && (
-                            <a
-                              href={preset.setupUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400 hover:text-cyan-300 pt-1"
+                          <div className="flex items-center gap-3 pt-1 flex-wrap">
+                            {preset.setupUrl && (
+                              <a
+                                href={preset.setupUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[10px] font-mono text-cyan-400 hover:text-cyan-300"
+                              >
+                                <span>Config Portal ({new URL(preset.setupUrl).hostname})</span>
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setManifestUrl(preset.manifestUrl);
+                                setActiveTab('installed');
+                              }}
+                              className="text-[10px] font-mono text-purple-400 hover:text-purple-300 underline underline-offset-2"
                             >
-                              <span>Configure token on {preset.setupUrl}</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
-                          )}
+                              Copy to Custom Manifest Input
+                            </button>
+                          </div>
                         </div>
                       </div>
 
@@ -330,7 +417,11 @@ export default function AddonManagerModal({
                           <button
                             onClick={() => handleInstall(preset.manifestUrl)}
                             disabled={isInstalling}
-                            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-mono text-xs font-bold transition-all shadow-md shadow-purple-600/30 flex items-center gap-1"
+                            className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold transition-all shadow-md flex items-center gap-1 ${
+                              preset.cost === 'paid'
+                                ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
+                                : 'bg-purple-600 hover:bg-purple-500 text-white shadow-purple-600/30'
+                            } disabled:opacity-50`}
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Install</span>

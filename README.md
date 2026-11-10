@@ -3,8 +3,11 @@
 > A clean-room reconstructed media streaming architecture and forensic workbench, engineered as an architectural study of modern high-efficiency desktop media engines (Rust `wry`/`tao` native shell, `libmpv` C ABI FFI, and Addon Protocol v3). Features an adaptive HLS video player, live metadata catalog browsing, real-time Apple VideoToolbox hardware decoding telemetry, subtitle customization, and decentralized addon management.
 
 Architected by **Balaji Palani** (Senior Scrum Master / Technical Agile Delivery Lead, CSM®, SAFe® 6 SSM).  
-**Live Cloud URL:** [https://balastream.onrender.com](https://balastream.onrender.com)  
+**Deployment Model:** Local-First Desktop / Native Architecture Study (Running locally on macOS port 5185)  
 **GitHub Repository:** [https://github.com/layyzee/BalaStream](https://github.com/layyzee/BalaStream)  
+**Architectural Report:** [`docs/LAUNCH_REPORT.md`](docs/LAUNCH_REPORT.md)  
+
+> **Design Note:** Unlike cloud web applications, native media engines (such as Stremio Desktop 5 or Nuvio on macOS) rely on local hardware decoding (`libmpv` C ABI + Apple VideoToolbox) and local loopback streaming (`127.0.0.1:11470`). Deploying video proxy servers to public cloud web hosts (like Render) causes CORS restrictions, stream host throttling, and heavy server egress bandwidth. BalaStream is engineered as a local-first engineering benchmark and architectural case study.  
 
 ---
 
