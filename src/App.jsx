@@ -209,6 +209,8 @@ export default function App() {
         <VideoPlayerModal
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
+          allItems={items}
+          onSwitchItem={(item) => setSelectedItem(item)}
         />
       )}
 
