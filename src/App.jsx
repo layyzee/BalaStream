@@ -143,7 +143,11 @@ export default function App() {
         const playId = queryParams.get('play');
         if (playId) {
           const match = data.metas?.find(m => m.id === playId || m.imdb_id === playId);
-          if (match) setSelectedItem(match);
+          if (match) {
+            setSelectedItem(match);
+          } else {
+            setSelectedItem({ id: playId, imdb_id: playId, name: 'Selected Title' });
+          }
         }
       })
       .catch(err => {
@@ -158,7 +162,16 @@ export default function App() {
   }, [activeType, activeGenre, debouncedSearch]);
 
   const handleAddAddon = (newAddon) => {
-    setAddons(prev => [...prev, newAddon]);
+    setAddons(prev => [...prev.filter(a => a.id !== newAddon.id), newAddon]);
+  };
+
+  const handleRemoveAddon = async (addonId) => {
+    try {
+      await fetch(`/api/addons/${addonId}`, { method: 'DELETE' });
+      setAddons(prev => prev.filter(a => a.id !== addonId));
+    } catch (err) {
+      console.error('Failed to remove addon:', err);
+    }
   };
 
   return (
@@ -220,6 +233,7 @@ export default function App() {
         onClose={() => setIsAddonModalOpen(false)}
         addons={addons}
         onAddAddon={handleAddAddon}
+        onRemoveAddon={handleRemoveAddon}
       />
 
       {/* 6. Forensic Architecture Deconstruction Modal */}

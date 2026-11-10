@@ -152,7 +152,18 @@ let installedAddons = [
     description: 'Official metadata provider for movies and series catalogs via IMDb & TheMovieDB.',
     manifestUrl: 'https://v3-cinemeta.strem.io/manifest.json',
     icon: '🎬',
-    official: true
+    official: true,
+    resources: ['catalog', 'meta']
+  },
+  {
+    id: 'com.stremio.HdHub',
+    name: 'HDHub Streams',
+    version: '1.0.7',
+    description: 'Direct multi-quality HTTP & HLS streams for movies and series.',
+    manifestUrl: 'https://hdhub.thevolecitor.qzz.io/eyJ0b3Jib3giOiJ1bnNldCIsInF1YWxpdGllcyI6IjIxNjBwLDEwODBwLDcyMHAiLCJzb3J0IjoiZGVzYyJ9/manifest.json',
+    icon: '⚡',
+    official: false,
+    resources: ['stream', 'catalog']
   },
   {
     id: 'org.stremio.opensubtitles',
@@ -161,7 +172,8 @@ let installedAddons = [
     description: 'Official subtitle provider matching film audio tracks across 60+ languages.',
     manifestUrl: 'https://opensubtitles-v3.strem.io/manifest.json',
     icon: '💬',
-    official: true
+    official: true,
+    resources: ['subtitles']
   },
   {
     id: 'org.stremio.publicdomain',
@@ -170,7 +182,8 @@ let installedAddons = [
     description: 'Open-access cinematic masterpieces and 4K 60fps Blender Institute media.',
     manifestUrl: 'https://v3-public.strem.io/manifest.json',
     icon: '🏛️',
-    official: true
+    official: true,
+    resources: ['catalog', 'meta', 'stream']
   }
 ];
 
@@ -271,8 +284,61 @@ app.get('/api/catalog', async (req, res) => {
   }
 });
 
+// Universal Stream Proxy (bypasses browser CORS just like Stremio's server.js 11470 daemon)
+app.get('/api/proxy-stream', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).send('Missing url parameter');
+
+  try {
+    const upstream = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': new URL(url).origin
+      }
+    });
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    
+    const contentType = upstream.headers.get('content-type') || '';
+    const arrayBuffer = await upstream.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const firstChars = buffer.slice(0, 10).toString('utf8');
+    const isM3U8 = firstChars.startsWith('#EXTM3U') || url.includes('.m3u8') || contentType.includes('mpegurl');
+
+    if (isM3U8) {
+      res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+      const text = buffer.toString('utf8');
+      const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+      
+      // Rewrite all non-comment URI lines to route through our proxy
+      let rewritten = text.replace(/^(?!#)(.+)$/gm, (line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+        const absolute = trimmed.startsWith('http') ? trimmed : new URL(trimmed, baseUrl).href;
+        return `/api/proxy-stream?url=${encodeURIComponent(absolute)}`;
+      });
+
+      // Also rewrite #EXT-X-MAP:URI="..." and #EXT-X-KEY:URI="..."
+      rewritten = rewritten.replace(/URI="([^"]+)"/g, (match, uri) => {
+        const absolute = uri.startsWith('http') ? uri : new URL(uri, baseUrl).href;
+        return `URI="/api/proxy-stream?url=${encodeURIComponent(absolute)}"`;
+      });
+
+      return res.send(rewritten);
+    }
+
+    // Direct binary media (video/mp2t, audio/aac, video/mp4, image segments, etc.)
+    res.setHeader('Content-Type', contentType || 'video/mp4');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).send(`Stream proxy error: ${err.message}`);
+  }
+});
+
 // Stream candidate resolver
-app.get('/api/streams/:id', (req, res) => {
+app.get('/api/streams/:id', async (req, res) => {
   const { id } = req.params;
   const match = OPEN_STREAMS.find(item => item.imdb_id === id || item.id === id);
 
@@ -287,6 +353,59 @@ app.get('/api/streams/:id', (req, res) => {
       cast: match.cast,
       director: match.director,
       streams: match.streams
+    });
+  }
+
+  // Query installed stream addons dynamically via Addon Protocol v3
+  const streamAddons = installedAddons.filter(a => Array.isArray(a.resources) && a.resources.includes('stream'));
+  const aggregatedStreams = [];
+
+  for (const addon of streamAddons) {
+    if (!addon.manifestUrl) continue;
+    try {
+      const baseUrl = addon.manifestUrl.replace(/\/manifest\.json$/, '');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4500);
+
+      const streamEndpoint = `${baseUrl}/stream/movie/${id}.json`;
+      const response = await fetch(streamEndpoint, {
+        signal: controller.signal,
+        headers: { 'User-Agent': 'BalaStream/1.0 (Apple Silicon; Stremio 5.1.30)' }
+      });
+      clearTimeout(timeout);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data.streams)) {
+          for (const s of data.streams) {
+            if (s.url && typeof s.url === 'string') {
+              const isHls = s.url.includes('.m3u8') || (s.behaviorHints && s.behaviorHints.notWebReady === false);
+              const label = s.name || s.title || addon.name;
+              aggregatedStreams.push({
+                name: `${addon.name} • ${label.replace(/\n.*/g, '').slice(0, 32)}`,
+                type: isHls ? 'hls' : 'mp4',
+                url: `/api/proxy-stream?url=${encodeURIComponent(s.url)}`,
+                quality: label.includes('4K') || label.includes('2160') ? '4K UHD' : label.includes('1080') ? '1080p' : label.includes('720') ? '720p' : 'Auto',
+                codec: 'H.264 / AAC',
+                bitrate: s.behaviorHints?.videoSize ? `${Math.round(s.behaviorHints.videoSize / (1024 * 1024))} MB` : 'Adaptive'
+              });
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.log(`Addon ${addon.name} query skipped:`, err.message);
+    }
+  }
+
+  if (aggregatedStreams.length > 0) {
+    // Sort so web-ready HLS (.m3u8) streams appear first
+    aggregatedStreams.sort((a, b) => (b.type === 'hls' ? 1 : 0) - (a.type === 'hls' ? 1 : 0));
+
+    return res.json({
+      id,
+      name: 'Stream Candidates',
+      streams: aggregatedStreams.slice(0, 8) // Limit to top 8 best candidate streams
     });
   }
 
@@ -334,10 +453,11 @@ app.post('/api/addons', async (req, res) => {
       id: manifest.id || `custom.addon.${Date.now()}`,
       name: manifest.name || 'Custom Addon',
       version: manifest.version || '1.0.0',
-      description: manifest.description || 'Community Stremio Addon Protocol v3 integration.',
+      description: manifest.description || 'Community Addon Protocol v3 integration.',
       manifestUrl,
       icon: '🧩',
-      official: false
+      official: false,
+      resources: manifest.resources || ['stream', 'catalog']
     };
 
     installedAddons.push(newAddon);
@@ -345,6 +465,12 @@ app.post('/api/addons', async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: `Failed to fetch addon manifest: ${err.message}` });
   }
+});
+
+app.delete('/api/addons/:id', (req, res) => {
+  const { id } = req.params;
+  installedAddons = installedAddons.filter(a => a.id !== id);
+  res.json({ success: true, removed: id });
 });
 
 // Fallback all routes to index.html for client-side routing
